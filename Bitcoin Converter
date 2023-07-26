@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bitcoin Converter</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Bitcoin Converter</h1>
+  <form id="converter-form">
+    <input type="number" id="amount" placeholder="Amount">
+    <select id="currency">
+      <option value="USD">USD</option>
+      <option value="EUR">EUR</option>
+      <!-- Add more currencies here -->
+    </select>
+    <button type="submit">Convert</button>
+  </form>
+  <div id="result"></div>
+  <script src="app.js"></script>
+</body>
+</html>
+
+----CSS FILE---
+
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+
+#converter-form {
+  display: inline-flex;
+  gap: 10px;
+}
+
+#result {
+  margin-top: 20px;
+}
+
+---JAVASCRIPT---
+const form = document.getElementById('converter-form');
+const amountInput = document.getElementById('amount');
+const currencySelect = document.getElementById('currency');
+const resultDiv = document.getElementById('result');
+
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const amount = parseFloat(amountInput.value);
+  const currency = currencySelect.value;
+
+  if (isNaN(amount)) {
+    alert('Please enter a valid amount');
+    return;
+  }
+
+  const apiKey = '03C017F0-450F-4EA2-A9B6-DC18528CAE0F';
+  const url = `https://rest.coinapi.io/v1/exchangerate/BTC/${currency}?apikey=${apiKey}`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (response.ok) {
+      const convertedAmount = amount * data.rate;
+      resultDiv.textContent = `${amount} BTC is equal to ${convertedAmount.toFixed(2)} ${currency}`;
+    } else {
+      alert(`Error: ${data.error}`);
+    }
+  } catch (error) {
+    alert('Failed to fetch conversion rate');
+  }
+});
